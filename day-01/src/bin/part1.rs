@@ -3,7 +3,7 @@ fn main() {
 }
 
 fn process() {
-    let input = include_str!("../input1.txt");
+    let input = include_str!("../../input1.txt");
     let sum = input.lines().fold(0, |acc, line| acc + decode_string(line));
     println!("Hello, world! {}", sum);
 }
@@ -28,6 +28,6 @@ mod tests {
     fn it_works() {
         let input = "1abc2".to_string();
         let result = 12;
-        assert_eq!(result, decode_string(input));
+        assert_eq!(result, decode_string(&input));
     }
 }
