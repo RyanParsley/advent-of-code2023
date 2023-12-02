@@ -6,21 +6,18 @@ fn process() {
     let input = include_str!("../../input2.txt");
     let sum: i32 = input
         .lines()
-        .map(|line| decode_string(&replace_words(line)))
+        .map(|line| replace_words(line))
+        .map(|line| decode_string(&line))
         .sum();
-    println!("Hello, world! {}", sum);
+
+    println!("The answer is: {}", sum);
 }
 
 fn decode_string(string: &str) -> i32 {
-    let first = string.chars().find(|&c| c.is_digit(10)).ok_or("0").unwrap();
-    let last = string
-        .chars()
-        .rev()
-        .find(|&c| c.is_digit(10))
-        .ok_or("0")
-        .unwrap();
-    let result = format!("{}{}", first, last);
-    result.parse::<i32>().unwrap()
+    let first = string.chars().find(|&c| c.is_digit(10)).unwrap();
+    let last = string.chars().rev().find(|&c| c.is_digit(10)).unwrap();
+
+    format!("{}{}", first, last).parse::<i32>().unwrap()
 }
 
 fn replace_words(string: &str) -> String {
@@ -32,10 +29,7 @@ fn replace_words(string: &str) -> String {
         .filter(|word| word.len() > 0)
         .collect();
 
-    let first = parsed.first().unwrap();
-    let last = parsed.last().unwrap();
-
-    format!("{first}{last}")
+    parsed.join("")
 }
 fn word_parser(word: &str) -> &str {
     if word.starts_with("one") {
@@ -82,7 +76,7 @@ mod tests {
         assert_eq!(result, replace_words(input));
 
         let input = "eightwothree";
-        let result = "83".to_string();
+        let result = "823".to_string();
         assert_eq!(result, replace_words(input));
     }
 }
