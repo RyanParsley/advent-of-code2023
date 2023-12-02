@@ -4,20 +4,16 @@ fn main() {
 
 fn process() {
     let input = include_str!("../../input1.txt");
-    let sum = input.lines().fold(0, |acc, line| acc + decode_string(line));
-    println!("Hello, world! {}", sum);
+    let sum: i32 = input.lines().map(|line| decode_string(line)).sum();
+
+    println!("The answer is: {}", sum);
 }
 
 fn decode_string(string: &str) -> i32 {
-    let first = string.chars().find(|&c| c.is_digit(10)).ok_or("0").unwrap();
-    let last = string
-        .chars()
-        .rev()
-        .find(|&c| c.is_digit(10))
-        .ok_or("0")
-        .unwrap();
-    let result = format!("{}{}", first, last);
-    result.parse::<i32>().unwrap()
+    let first = string.chars().find(|&c| c.is_digit(10)).unwrap();
+    let last = string.chars().rev().find(|&c| c.is_digit(10)).unwrap();
+
+    format!("{first}{last}").parse::<i32>().unwrap()
 }
 
 #[cfg(test)]
