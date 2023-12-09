@@ -78,54 +78,7 @@ mod tests {
     #[test]
     fn it_works() {
         let input = include_str!("mock-1.txt");
-        let result = 8;
+        let result = 2286;
         assert_eq!(result, process(input));
-    }
-
-    #[test]
-    fn it_validates_lines() {
-        let input = Game {
-            id: 1,
-            rounds: vec![Cubes {
-                red: 10,
-                blue: 10,
-                green: 10,
-            }],
-        };
-        let result = true;
-        assert_eq!(result, is_game_valid(&input));
-
-        let input = Game {
-            id: 1,
-            rounds: vec![Cubes {
-                red: 13,
-                blue: 10,
-                green: 10,
-            }],
-        };
-        let result = false;
-        assert_eq!(result, is_game_valid(&input));
-
-        let input = Game {
-            id: 1,
-            rounds: vec![Cubes {
-                red: 10,
-                blue: 15,
-                green: 10,
-            }],
-        };
-        let result = false;
-        assert_eq!(result, is_game_valid(&input));
-        let input = Game {
-            id: 1,
-            rounds: vec![Cubes {
-                red: 10,
-                blue: 10,
-                green: 14,
-            }],
-        };
-
-        let result = false;
-        assert_eq!(result, is_game_valid(&input));
     }
 }
