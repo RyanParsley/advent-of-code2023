@@ -14,10 +14,9 @@ enum HandType {
     FourOfAKind,
     FiveOfAKind,
 }
-
+#[derive(Debug)]
 struct Hand {
     hand_type: HandType,
-    tie_breaker: i32,
     cards: Vec<char>,
     bid: i32,
 }
@@ -72,27 +71,29 @@ fn process(input: &str) -> i32 {
 
             let matches = of_a_kind(cards.clone());
 
-            let tie_breaker = matches
-                .iter()
-                .enumerate()
-                .max()
-                .map(|(index, _)| rank_card(cards[index]))
-                .unwrap();
-
             let hand_type = hand_type(matches);
 
             Hand {
-                tie_breaker,
                 hand_type,
-                cards,
                 bid,
+                cards,
             }
         })
         .collect::<Vec<Hand>>();
 
     hands.sort_by(|a, b| {
         if a.hand_type.eq(&b.hand_type) {
-            return a.tie_breaker.partial_cmp(&b.tie_breaker).unwrap();
+            let mut index = 0;
+            for i in 0..4 {
+                if a.cards[i] == b.cards[i] {
+                    index = i + 1;
+                } else {
+                    break;
+                }
+            }
+            return rank_card(a.cards[index])
+                .partial_cmp(&rank_card(b.cards[index]))
+                .unwrap();
         }
         return a.hand_type.partial_cmp(&b.hand_type).unwrap();
     });
@@ -162,6 +163,10 @@ mod tests {
         let input = include_str!("mock-1.txt");
         let result = 6440;
         assert_eq!(result, process(input));
+
+        let input = include_str!("../../input1.txt");
+        let result = 251216224;
+        assert_eq!(result, process(input));
     }
 
     #[test]
@@ -196,3 +201,4 @@ mod tests {
         assert_eq!(result, rank_card(input));
     }
 }
+// 251209354 was wrong. too low
