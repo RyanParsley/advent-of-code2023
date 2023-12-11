@@ -1,17 +1,17 @@
 fn main() {
-    let input = include_str!("../../input2.txt");
+    let input = include_str!("../../input1.txt");
 
     let sum = process(input);
     println!("The answer is: {sum}");
 }
 
 fn process(input: &str) -> i32 {
-    input
+    let games = input
         .lines()
         .map(|line| parse_cubes(line))
-        .filter(|game| is_game_valid(game))
-        .map(|line| line.id)
-        .sum()
+        .collect::<Vec<Game>>();
+
+    games.iter().map(|game| derive_power(game)).sum()
 }
 
 #[derive(Debug)]
@@ -61,14 +61,22 @@ fn parse_cubes(line: &str) -> Game {
 
     Game { id, rounds }
 }
+fn derive_power(game: &Game) -> i32 {
+    let power = game.rounds.iter().fold(
+        Cubes {
+            red: 0,
+            blue: 0,
+            green: 0,
+        },
+        |acc, round| Cubes {
+            red: std::cmp::max(acc.red, round.red),
+            blue: std::cmp::max(acc.blue, round.blue),
+            green: std::cmp::max(acc.green, round.green),
+        },
+    );
 
-fn is_game_valid(game: &Game) -> bool {
-    game.rounds.iter().fold(true, |acc, round| {
-        if acc == false {
-            return false;
-        }
-        round.blue <= 14 && round.red <= 12 && round.green <= 13
-    })
+    dbg!(&power);
+    power.red * power.blue * power.green
 }
 
 #[cfg(test)]
@@ -79,6 +87,10 @@ mod tests {
     fn it_works() {
         let input = include_str!("mock-1.txt");
         let result = 2286;
+        assert_eq!(result, process(input));
+
+        let input = include_str!("../../input1.txt");
+        let result = 77021;
         assert_eq!(result, process(input));
     }
 }
