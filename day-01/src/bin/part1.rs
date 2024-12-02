@@ -1,19 +1,12 @@
+
 fn main() {
-    process()
-}
-
-fn process() {
     let input = include_str!("../../input1.txt");
-    let sum: i32 = input.lines().map(|line| decode_string(line)).sum();
-
-    println!("The answer is: {}", sum);
+    let output = process(input);
+    println!("The answer is: {output}");
 }
 
-fn decode_string(string: &str) -> i32 {
-    let first = string.chars().find(|&c| c.is_digit(10)).unwrap();
-    let last = string.chars().rev().find(|&c| c.is_digit(10)).unwrap();
-
-    format!("{first}{last}").parse::<i32>().unwrap()
+fn process(input: &str) -> i32 {
+    input
 }
 
 #[cfg(test)]
@@ -22,8 +15,8 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let input = "1abc2".to_string();
-        let result = 12;
-        assert_eq!(result, decode_string(&input));
+        let input = include_str!("mock-1.txt");
+        let result = 42;
+        assert_eq!(result, process(input));
     }
 }

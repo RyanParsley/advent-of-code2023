@@ -1,12 +1,11 @@
 fn main() {
     let input = include_str!("../../input2.txt");
-
-    let sum = process(input);
-    println!("The answer is: {sum}");
+    let output = process(input);
+    println!("The answer is: {output}");
 }
 
 fn process(input: &str) -> i32 {
-    42
+    input
 }
 
 #[cfg(test)]
@@ -16,7 +15,7 @@ mod tests {
     #[test]
     fn it_works() {
         let input = include_str!("mock-1.txt");
-        let result = 8;
+        let result = 42;
         assert_eq!(result, process(input));
     }
 }
