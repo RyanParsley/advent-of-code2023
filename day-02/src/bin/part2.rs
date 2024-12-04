@@ -8,8 +8,23 @@ fn process(input: &str) -> i32 {
     input
         .lines()
         .map(parse_line_to_nums)
-        .map(validate_numbers)
-        .sum()
+        .map(is_this_fine)
+        .filter(|x| *x)
+        .count() as i32
+}
+
+fn is_this_fine(nums: Vec<i32>) -> bool {
+    if validate_numbers(nums.clone()) {
+        return true;
+    }
+    for i in 0..nums.len() {
+        let mut nums_copy = nums.clone();
+        nums_copy.remove(i);
+        if validate_numbers(nums_copy) {
+            return true;
+        }
+    }
+    false
 }
 
 fn parse_line_to_nums(line: &str) -> Vec<i32> {
@@ -18,36 +33,18 @@ fn parse_line_to_nums(line: &str) -> Vec<i32> {
         .collect()
 }
 
-fn validate_numbers(mut nums: Vec<i32>) -> i32 {
-    let mut first_fault = false;
-    let mut i = 0;
-    let is_ascending = nums[0] < nums[1];
-
-    loop {
-        if i >= nums.len() - 1 {
-            break;
-        }
-        if compare_by_index(nums.clone(), i, i + 1, is_ascending) {
-            if first_fault {
-                return 0;
-            }
-            first_fault = true;
-            nums.remove(i + 1);
-            if nums.len() > i + 1 && compare_by_index(nums.clone(), i, i + 1, is_ascending) {
-                return 0;
-            }
-            continue;
-        }
-        i += 1;
+fn validate_numbers(nums: Vec<i32>) -> bool {
+    let is_ascending = nums.windows(2).all(|w| w[0] <= w[1]);
+    let is_descending = nums.windows(2).all(|w| w[0] >= w[1]);
+    if !is_ascending && !is_descending {
+        return false;
     }
-    1
-}
 
-fn compare_by_index(collection: Vec<i32>, a: usize, b: usize, is_ascending: bool) -> bool {
-    (collection[a] - collection[b]).abs() > 3
-        || collection[a] == collection[b]
-        || is_ascending && collection[a] > collection[b]
-        || !is_ascending && collection[a] < collection[b]
+    let is_valid = nums
+        .windows(2)
+        .map(|window| (window[0] - window[1]).abs())
+        .all(|diff| (1..=3).contains(&diff));
+    is_valid
 }
 
 #[cfg(test)]
@@ -64,19 +61,18 @@ mod tests {
     #[test]
     fn it_parses_lines_to_numbers() {
         let result = vec![1, 2, 3, 4, 5];
-        assert_eq!(result, parse_line_to_nums(&"1 2 3 4 5"));
+        assert_eq!(result, parse_line_to_nums("1 2 3 4 5"));
     }
     #[test]
     fn it_validates_numbers() {
-        assert_eq!(0, validate_numbers(vec![1, 1, 1, 1, 1]));
-        assert_eq!(1, validate_numbers(vec![1, 2, 3, 4, 5]));
-        assert_eq!(1, validate_numbers(vec![7, 6, 4, 2, 1]));
-        assert_eq!(1, validate_numbers(vec![8, 6, 4, 4, 1]));
-        assert_eq!(1, validate_numbers(vec![1, 3, 6, 7, 9]));
-        assert_eq!(1, validate_numbers(vec![1, 3, 2, 4, 5]));
-        assert_eq!(0, validate_numbers(vec![1, 2, 7, 8, 9]));
-        assert_eq!(0, validate_numbers(vec![9, 7, 6, 2, 1]));
-        // 449 is too low
-        // 626
+        assert!(validate_numbers(vec![1, 1, 1, 1, 1]));
+        assert!(!validate_numbers(vec![1, 2, 3, 4, 5]));
+        assert!(!validate_numbers(vec![7, 6, 4, 2, 1]));
+        assert!(!validate_numbers(vec![8, 6, 4, 4, 1]));
+        assert!(!validate_numbers(vec![1, 3, 6, 7, 9]));
+        assert!(!validate_numbers(vec![1, 3, 2, 4, 5]));
+        assert!(validate_numbers(vec![1, 2, 7, 8, 9]));
+        assert!(validate_numbers(vec![9, 7, 6, 2, 1]));
+        // 465
     }
 }
